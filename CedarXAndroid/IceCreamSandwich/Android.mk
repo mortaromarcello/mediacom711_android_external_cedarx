@@ -69,6 +69,7 @@ LOCAL_STATIC_LIBRARIES += \
 	libcedarxstream \
 	libthirdpartstream \
 	libdemux_cedarm \
+	libstagefright_rtsp \
 
 ifeq ($(CEDARX_RTSP_VERSION),3)
 LOCAL_STATIC_LIBRARIES += \
@@ -185,7 +186,7 @@ ifeq ($(TARGET_OS)-$(TARGET_SIMULATOR),linux-true)
         LOCAL_LDLIBS += -lpthread
 endif
 
-LOCAL_CFLAGS += -Wno-multichar 
+LOCAL_CFLAGS += -Wno-multichar
 
 ifeq ($(CEDARX_ANDROID_VERSION),3)
 LOCAL_CFLAGS += -D__ANDROID_VERSION_2_3

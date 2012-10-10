@@ -69,7 +69,6 @@ LOCAL_STATIC_LIBRARIES += \
 	libcedarxstream \
 	libthirdpartstream \
 	libdemux_cedarm \
-	libstagefright_rtsp \
 
 ifeq ($(CEDARX_RTSP_VERSION),3)
 LOCAL_STATIC_LIBRARIES += \

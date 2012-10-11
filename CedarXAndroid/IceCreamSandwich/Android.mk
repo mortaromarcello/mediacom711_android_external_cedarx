@@ -31,6 +31,11 @@ ifeq ($(PLATFORM_VERSION),4.1.1)
     LOCAL_C_INCLUDES += $(TOP)/frameworks/native/include/media/hardware
 endif
 
+ifeq ($(PLATFORM_VERSION),4.1.2)
+    LOCAL_C_INCLUDES += $(TOP)/frameworks/native/include/media/hardware
+endif
+
+
 LOCAL_SHARED_LIBRARIES := \
         libbinder         \
         libmedia          \
@@ -44,6 +49,10 @@ LOCAL_SHARED_LIBRARIES := \
         libskia
 
 ifneq ($(PLATFORM_VERSION),4.1.1)
+LOCAL_SHARED_LIBRARIES += libsurfaceflinger_client
+endif
+
+ifneq ($(PLATFORM_VERSION),4.1.2)
 LOCAL_SHARED_LIBRARIES += libsurfaceflinger_client
 endif
 

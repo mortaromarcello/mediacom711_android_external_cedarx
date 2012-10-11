@@ -37,11 +37,11 @@ LOCAL_SHARED_LIBRARIES := \
         libutils          \
         libcutils         \
         libui             \
-        libgui			  \
+        libgui \
         libcamera_client \
         libstagefright_foundation \
         libicuuc \
-		libskia 
+        libskia
 
 ifneq ($(PLATFORM_VERSION),4.1.1)
 LOCAL_SHARED_LIBRARIES += libsurfaceflinger_client
@@ -61,7 +61,7 @@ LOCAL_STATIC_LIBRARIES += \
 	libmp4_muxer \
 	libawts_muxer \
 	libraw_muxer \
-	libjpgenc	\
+	libjpgenc \
 	libuserdemux \
 	libcedarxwvmdemux
 

@@ -17,7 +17,7 @@ CEDARX_DEBUG_DEMUXER := N
 endif
 
 ############################################################################
-ifeq ($(PLATFORM_VERSION),4.1.2)
+ifeq ($(PLATFORM_VERSION),4.1.1)
 AV_BASE_PATH := av
 TEMP_COMPILE_DISABLE := true
 else
@@ -25,6 +25,13 @@ AV_BASE_PATH := base
 TEMP_COMPILE_DISABLE := false
 endif
 
+ifeq ($(PLATFORM_VERSION),4.1.2)
+AV_BASE_PATH := av
+TEMP_COMPILE_DISABLE := true
+else
+AV_BASE_PATH := base
+TEMP_COMPILE_DISABLE := false
+endif
 
 ifeq ($(PLATFORM_VERSION),2.3.4)
 CEDARX_ANDROID_VERSION := 4

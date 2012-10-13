@@ -2,6 +2,8 @@
 
 ############################################################################
 CEDARX_EXT_CFLAGS :=
+# manually config CEDARX_ADAPTER_VERSION according to internal version. now default set to v1.5release(V15).
+CEDARX_ADAPTER_VERSION := V15
 
 
 CEDARX_PRODUCTOR := GENERIC

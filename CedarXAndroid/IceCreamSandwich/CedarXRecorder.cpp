@@ -33,6 +33,12 @@
 
 #define F_LOG 	LOGV("%s, line: %d", __FUNCTION__, __LINE__);
 
+#if (CEDARX_ANDROID_VERSION < 7)
+#define OUTPUT_FORMAT_RAW 10
+#define AUDIO_SOURCE_AF 8
+#define MEDIA_RECORDER_VENDOR_EVENT_EMPTY_BUFFER_ID 3000
+#define MEDIA_RECORDER_VENDOR_EVENT_BSFRAME_AVAILABLE 3001
+#endif
 extern "C" int CedarXRecorderCallbackWrapper(void *cookie, int event, void *info);
 
 namespace android {
@@ -129,6 +135,12 @@ CedarXRecorder::CedarXRecorder()
         mFrameHeap.clear();
 	}
 	mFrameBuffer = new MemoryBase(mFrameHeap, 0, sizeof(int));
+
+    pCedarXRecorderAdapter = new CedarXRecorderAdapter(this);
+    if(NULL == pCedarXRecorderAdapter)
+    {
+        LOGW("new CedarXRecorderAdapter fail! File[%s],Line[%d]\n", __FILE__, __LINE__);
+    }
 }
 
 CedarXRecorder::~CedarXRecorder() 
@@ -151,6 +163,11 @@ CedarXRecorder::~CedarXRecorder()
 		mUrl = NULL;
 	}
 
+    if(pCedarXRecorderAdapter)
+    {
+        delete pCedarXRecorderAdapter;
+        pCedarXRecorderAdapter = NULL;
+    }
 	LOGV("CedarXRecorder Destructor OK");
 }
 
@@ -292,7 +309,8 @@ status_t CedarXRecorder::isCameraAvailable(
     	CHECK_EQ((status_t)OK, mCamera->setPreviewDisplay(mPreviewSurface));
     }
 
-    mCamera->sendCommand(CAMERA_CMD_SET_CEDARX_RECORDER, 0, 0);
+    //mCamera->sendCommand(CAMERA_CMD_SET_CEDARX_RECORDER, 0, 0);
+    pCedarXRecorderAdapter->CedarXRecorderAdapterIoCtrl(CEDARXRECORDERADAPTER_CMD_NOTIFY_CAMERA_CEDARX_ENCODE, 0, NULL);
 
     mCamera->lock();
 
@@ -1022,6 +1040,8 @@ void CedarXRecorder::dataCallbackTimestamp(int64_t timestampUs,
 	}
 	
 	memcpy((void *)&buf, data->pointer(), sizeof(V4L2BUF_t));
+
+	buf.overlay_info = NULL; //add this for cts test
 	
 	// if encoder is stopped or paused ,release this frame
 	if (mStarted == false)

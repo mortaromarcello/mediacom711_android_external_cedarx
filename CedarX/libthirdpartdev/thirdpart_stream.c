@@ -52,6 +52,22 @@ static long long thirdpart_get_stream_size(struct cdx_stream_info *stream)
 	return 0;
 }
 
+static int thirdpart_decrypt_stream(void *ptr, size_t size, int pkt_type, struct cdx_stream_info *stream)
+{
+	//pkt_type
+	//1:video
+	//2:audio
+	//3:subtitle
+	if(pkt_type == 1) {
+		//decrypt_video(ptr, size);
+	} else if(pkt_type == 2) {
+		//decrypt_audio(ptr, size);
+	} else if(pkt_type == 3) {
+		//decrypt_xxxx(ptr, size);
+	}
+
+	return 0;
+}
 int thirdpart_create_stream_handle(struct cdx_stream_info *stm_info)
 {
 	LOGI(">>>> thirdpart stream info:%s",stm_info->data_src_desc.source_url);

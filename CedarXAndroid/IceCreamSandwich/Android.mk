@@ -21,7 +21,7 @@ ifeq ($(PLATFORM_VERSION),4.0.4)
 	ADAPTER_DIRS:= $(shell find $(LOCAL_PATH)/CedarXAdapter/Android404_V15 -maxdepth 3 -type d)
   endif
 endif
-ifeq ($(PLATFORM_VERSION),4.1.1)
+ifeq ($(PLATFORM_VERSION),4.1.2)
 	ADAPTER_DIRS:= $(shell find $(LOCAL_PATH)/CedarXAdapter/Android411 -maxdepth 3 -type d)
 endif
 LOCAL_SRC_FILES += $(foreach dir,$(ADAPTER_DIRS),$(patsubst $(LOCAL_PATH)/%,%,$(wildcard $(dir)/*.cpp $(dir)/*.c)))

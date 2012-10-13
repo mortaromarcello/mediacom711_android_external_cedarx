@@ -52,7 +52,8 @@ cp $SRCDIR0/../../system/lib/libaw_audio.so ./
 #cp $SRCDIR0/../../system/lib/libswa2.so ./
 cp $SRCDIR0/../../system/lib/libaw_audioa.so ./
 cp $SRCDIR0/../../system/lib/libswdrm.so ./
-
+cp $SRCDIR0/../../system/lib/libthirdpartstream.so ./
+cp $SRCDIR0/../../system/lib/libcedarxsftstream.so ./
 cp $SRCDIR0/../../system/lib/libcedarv_base.so ./
 cp $SRCDIR0/../../system/lib/libcedarv_adapter.so ./
 cp $SRCDIR0/../../system/lib/libve.so ./

@@ -67,7 +67,7 @@ typedef struct cdx_stream_info {
   int  (*write2)(void *bs_info, struct cdx_stream_info *stream);
   long long (*getsize)(struct cdx_stream_info *stream);
   int (*destory)(struct cdx_stream_info *stm_info);
-
+  int (*decrypt)(void *ptr, size_t size, int pkt_type, struct cdx_stream_info *stream);
   //below two function used for m3u/ts
   long long (*seek_to_time)(struct cdx_stream_info *stream, long long us);
   long long (*get_total_duration)(struct cdx_stream_info *stream);

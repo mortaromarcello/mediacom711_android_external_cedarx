@@ -87,9 +87,19 @@ CedarXNativeRenderer::CedarXNativeRenderer(
         CHECK_EQ(0, native_window_set_buffers_transform(
                     mNativeWindow.get(), transform));
     }
+    pCedarXNativeRendererAdapter = new CedarXNativeRendererAdapter(this);
+    if(NULL == pCedarXNativeRendererAdapter)
+    {
+        LOGW("create CedarXNativeRendererAdapter fail");
+    }
 }
 
 CedarXNativeRenderer::~CedarXNativeRenderer() {
+    if(pCedarXNativeRendererAdapter)
+    {
+        delete pCedarXNativeRendererAdapter;
+        pCedarXNativeRendererAdapter = NULL;
+    }
 }
 
 void CedarXNativeRenderer::render(
@@ -99,26 +109,26 @@ void CedarXNativeRenderer::render(
 }
 
 int CedarXNativeRenderer::control(int cmd, int para) {
-
+#if 0
 	switch(cmd){
-	case VIDEORENDER_CMD_ROTATION_DEG    :
-	case VIDEORENDER_CMD_DITHER          :
-	case VIDEORENDER_CMD_SETINITPARA     :
-	case VIDEORENDER_CMD_SETVIDEOPARA    :
-	case VIDEORENDER_CMD_SETFRAMEPARA    :
-	case VIDEORENDER_CMD_GETCURFRAMEPARA :
-	case VIDEORENDER_CMD_QUERYVBI        :
-	case VIDEORENDER_CMD_SETSCREEN       :
-	case VIDEORENDER_CMD_SHOW            :
-	case VIDEORENDER_CMD_RELEASE         :
-	case VIDEORENDER_CMD_SET3DMODE       :
-	case VIDEORENDER_CMD_SETFORMAT       :
-	case VIDEORENDER_CMD_VPPON           :
-	case VIDEORENDER_CMD_VPPGETON        :
-	case VIDEORENDER_CMD_SETLUMASHARP    :
-	case VIDEORENDER_CMD_GETLUMASHARP    :
-	case VIDEORENDER_CMD_SETCHROMASHARP  :
-	case VIDEORENDER_CMD_GETCHROMASHARP  :
+	case VIDEORENDER_CMD_ROTATION_DEG    :  
+	case VIDEORENDER_CMD_DITHER          :  
+	case VIDEORENDER_CMD_SETINITPARA     :  
+	case VIDEORENDER_CMD_SETVIDEOPARA    :  
+	case VIDEORENDER_CMD_SETFRAMEPARA    :  
+	case VIDEORENDER_CMD_GETCURFRAMEPARA :  
+	case VIDEORENDER_CMD_QUERYVBI        :  
+	case VIDEORENDER_CMD_SETSCREEN       :  
+	case VIDEORENDER_CMD_SHOW            :  
+	case VIDEORENDER_CMD_RELEASE         :  
+	case VIDEORENDER_CMD_SET3DMODE       :  
+	case VIDEORENDER_CMD_SETFORMAT       :  
+	case VIDEORENDER_CMD_VPPON           :  
+	case VIDEORENDER_CMD_VPPGETON        :  
+	case VIDEORENDER_CMD_SETLUMASHARP    :  
+	case VIDEORENDER_CMD_GETLUMASHARP    :  
+	case VIDEORENDER_CMD_SETCHROMASHARP  :  
+	case VIDEORENDER_CMD_GETCHROMASHARP  :  
 	//case VIDEORENDER_CMD_SETWHITEEXTEN   :
 	//case VIDEORENDER_CMD_GETWHITEEXTEN   :
 	case VIDEORENDER_CMD_SETBLACKEXTEN   :
@@ -132,6 +142,10 @@ int CedarXNativeRenderer::control(int cmd, int para) {
 	}
 
     return 0;
+#endif
+
+    return pCedarXNativeRendererAdapter->CedarXNativeRendererAdapterIoCtrl(cmd, para, NULL);
 }
 
 }  // namespace android
+

@@ -17,6 +17,7 @@ namespace android {
 
 class Camera;
 class AudioRecord;
+class CedarXRecorderAdapter;
 
 #define AUDIO_LATENCY_TIME	700000		// US
 #define VIDEO_LATENCY_TIME	700000		// US
@@ -132,7 +133,6 @@ private:
         // the video recording signal tone
         kAutoRampStartUs = 700000,
     };
-
     sp<Camera> mCamera;
 	sp<ICameraRecordingProxy> mCameraProxy;
     sp<Surface> mPreviewSurface;
@@ -199,6 +199,28 @@ private:
 	
     CedarXRecorder(const CedarXRecorder &);
     CedarXRecorder &operator=(const CedarXRecorder &);
+
+    friend class CedarXRecorderAdapter;
+    CedarXRecorderAdapter *pCedarXRecorderAdapter;
+};
+
+typedef enum tag_CedarXRecorderAdapterCmd
+{
+    CEDARXRECORDERADAPTER_CMD_NOTIFY_CAMERA_CEDARX_ENCODE = 0,    //need tell camera, we use which encoder, from android4.0.4, change command name
+    
+    CEDARXRECORDERADAPTER_CMD_,
+}CedarXRecorderAdapterCmd;
+
+
+class CedarXRecorderAdapter  //base adapter
+{
+public:
+    CedarXRecorderAdapter(CedarXRecorder *recorder);
+    virtual ~CedarXRecorderAdapter();
+    int CedarXRecorderAdapterIoCtrl(int cmd, int aux, void *pbuffer);  //cmd = CedarXRecorderAdapterCmd
+    
+private:
+    CedarXRecorder* const pCedarXRecorder; //CedarXRecorder pointer
 };
 
 }  // namespace android

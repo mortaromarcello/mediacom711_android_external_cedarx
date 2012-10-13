@@ -15,8 +15,10 @@ LOCAL_C_INCLUDES := \
 LOCAL_MODULE_TAGS := optional
  
 LOCAL_CFLAGS += $(CEDARX_EXT_CFLAGS)
-
+LOCAL_SHARED_LIBRARIES := \
+        libutils          \
+        libcutils         
 LOCAL_MODULE:= libthirdpartstream
 
-include $(BUILD_STATIC_LIBRARY)
+include $(BUILD_SHARED_LIBRARY)
 

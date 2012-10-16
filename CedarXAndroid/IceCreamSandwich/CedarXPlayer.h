@@ -46,7 +46,6 @@ struct ISurfaceTexture;
 
 struct ALooper;
 struct AwesomePlayer;
-struct CedarXPlayerAdapter;
 
 struct CedarXRenderer : public RefBase {
     CedarXRenderer() {}
@@ -91,7 +90,6 @@ typedef struct CedarXPlayerExtendMember_{
 	int64_t mLastPositionUs;
 	int32_t mOutputSetting;
 	int32_t mUseHardwareLayer;
-	int32_t mPlaybackNotifySend;
 }CedarXPlayerExtendMember;
 
 struct CedarXPlayer { //don't touch this struct any more, you can extend members in CedarXPlayerExtendMember
@@ -243,7 +241,7 @@ private:
 
     int32_t mVideoWidth, mVideoHeight, mFirstFrame;
     int32_t mCanSeek;
-    int32_t mDisplayWidth, mDisplayHeight, mDisplayFormat;  //mDisplayFormat:HWC_FORMAT_MBYUV422 or HAL_PIXEL_FORMAT_YV12
+    int32_t mDisplayWidth, mDisplayHeight, mDisplayFormat;
     int32_t mLocalRenderFrameIDCurr;
     int64_t mTimeSourceDeltaUs;
     int64_t mVideoTimeUs;
@@ -360,32 +358,9 @@ private:
     int StagefrightAudioRenderGetSpace(void);
     int StagefrightAudioRenderGetDelay(void);
     int StagefrightAudioRenderFlushCache(void);
-    int StagefrightAudioRenderPause(void);
 
     CedarXPlayer(const CedarXPlayer &);
     CedarXPlayer &operator=(const CedarXPlayer &);
-
-    friend struct CedarXPlayerAdapter;
-    CedarXPlayerAdapter *pCedarXPlayerAdapter;
-};
-
-typedef enum tag_CedarXPlayerAdapterCmd
-{
-    CEDARXPLAYERADAPTER_CMD_SETSCREEN_SPECIALPROCESS = 0,    //till androidv4.0 v1.4 version. we need special process when setScreen, for lcd and hdmi switch quickly. Don't need it from v1.5version
-    
-    CEDARXPLAYERADAPTER_CMD_,
-}CedarXPlayerAdapterCmd;
-
-
-struct CedarXPlayerAdapter  //base adapter
-{
-public:
-    CedarXPlayerAdapter(CedarXPlayer *player);
-    virtual ~CedarXPlayerAdapter();
-    int CedarXPlayerAdapterIoCtrl(int cmd, int aux, void *pbuffer);  //cmd = CedarXPlayerAdapterCmd
-    
-protected:
-    CedarXPlayer* const pCedarXPlayer; //CedarXPlayer pointer
 };
 
 }  // namespace android

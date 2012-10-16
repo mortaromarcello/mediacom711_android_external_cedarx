@@ -17,7 +17,6 @@
 //#define LOG_NDEBUG 0
 #define LOG_TAG "CedarXAudioPlayer"
 #include <CDX_Debug.h>
-
 #include <binder/IPCThreadState.h>
 #include <media/AudioTrack.h>
 #include <media/stagefright/foundation/ADebug.h>
@@ -227,7 +226,6 @@ void CedarXAudioPlayer::AudioCallback(int event, void *info)
     }
 
     AudioTrack::Buffer *buffer = (AudioTrack::Buffer *)info;
-    LOGV("==== AudioSinkCallback, buffersize = %d", buffer->size);
     size_t numBytesWritten = fillBuffer(buffer->raw, buffer->size);
 
     buffer->size = numBytesWritten;
@@ -270,8 +268,6 @@ int CedarXAudioPlayer::getLatency()
 	else
 		cache_time = 0;
 	LOGV("mLatencyUs = %d", cache_time);
-	if(cache_time < 0)
-		cache_time = 0;
 	return cache_time;
 #else
 	return (int)mLatencyUs;

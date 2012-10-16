@@ -140,12 +140,6 @@ CedarXPlayer::CedarXPlayer() :
 
 	reset_l();
 	CDXPlayer_Create((void**)&mPlayer);
-    
-    pCedarXPlayerAdapter = new CedarXPlayerAdapter(this);
-    if(NULL == pCedarXPlayerAdapter)
-    {
-        LOGW("create CedarXPlayerAdapter fail!\n");
-    }
 
 	mPlayer->control(mPlayer, CDX_CMD_REGISTER_CALLBACK, (unsigned int)&CedarXPlayerCallbackWrapper, (unsigned int)this);
 	isCedarXInitialized = true;
@@ -180,11 +174,6 @@ CedarXPlayer::~CedarXPlayer() {
 		mPlayer = NULL;
 		isCedarXInitialized = false;
 	}
-    if(pCedarXPlayerAdapter)
-    {
-        delete pCedarXPlayerAdapter;
-        pCedarXPlayerAdapter = NULL;
-    }
 
 	if (mAudioPlayer) {
 		LOGV("delete mAudioPlayer");
@@ -510,12 +499,9 @@ status_t CedarXPlayer::stop() {
 status_t CedarXPlayer::stop_l() {
 	LOGV("stop() status:%x", mFlags & PLAYING);
 
-	if(!mExtendMember->mPlaybackNotifySend) {
-		notifyListener_l(MEDIA_INFO, MEDIA_INFO_BUFFERING_END);
-		LOGD("MEDIA_PLAYBACK_COMPLETE");
-		notifyListener_l(MEDIA_PLAYBACK_COMPLETE);
-		mExtendMember->mPlaybackNotifySend = 1;
-	}
+	notifyListener_l(MEDIA_INFO, MEDIA_INFO_BUFFERING_END);
+	LOGD("MEDIA_PLAYBACK_COMPLETE");
+	notifyListener_l(MEDIA_PLAYBACK_COMPLETE);
 
 	pause_l(true);
 
@@ -700,8 +686,7 @@ status_t CedarXPlayer::getPosition(int64_t *positionUs) {
 			return err;
 		}
 
-		//*positionUs = (tmp + 500) / 1000;
-		*positionUs = tmp;     //don't convert to millisecond!
+		*positionUs = (tmp + 500) / 1000;
 		LOGV("getPosition:%lld",*positionUs);
 		return OK;
 	}
@@ -744,7 +729,7 @@ status_t CedarXPlayer::seekTo(int64_t timeUs) {
 	int64_t currPositionUs;
     if(mPlayer->control(mPlayer, CDX_CMD_SUPPORT_SEEK, 0, 0) == 0)
     {   
-			  notifyListener_l(MEDIA_SEEK_COMPLETE);
+
         return OK;
     }
 	getPosition(&currPositionUs);
@@ -929,7 +914,7 @@ status_t CedarXPlayer::prepareAsync() {
 	}
 
 	//outputSetting |= CEDARX_OUTPUT_SETTING_MODE_PLANNER;
-	mExtendMember->mPlaybackNotifySend = 0;
+
 	mExtendMember->mOutputSetting = outputSetting;
 	mPlayer->control(mPlayer, CDX_CMD_SET_VIDEO_OUTPUT_SETTING, outputSetting, 0);
 
@@ -1083,59 +1068,57 @@ status_t CedarXPlayer::setScreen(int screen) {
 	LOGV("CedarX will setScreen to:%d", screen);
 	if(mVideoRenderer != NULL && !(mFlags & SUSPENDING)){
 		LOGV("CedarX setScreen to:%d", screen);
-		//return OK; //no need to setscreen from android4.0 v1.5 version
+		return OK; //no need to setscreen from android4.0 v1.5 version
 		//return mVideoRenderer->control(VIDEORENDER_CMD_SETSCREEN, screen);
-		return pCedarXPlayerAdapter->CedarXPlayerAdapterIoCtrl(CEDARXPLAYERADAPTER_CMD_SETSCREEN_SPECIALPROCESS, screen, NULL);
 	}
 	return UNKNOWN_ERROR;
 }
 
 status_t CedarXPlayer::set3DMode(int source3dMode, int displayMode)
 {
-	//video3Dinfo_t _3d_info;
-    VirtualVideo3DInfo  virtual_3d_info;
+	video3Dinfo_t _3d_info;
 
-	virtual_3d_info.width 	 			= mDisplayWidth;
-	virtual_3d_info.height	 			= mDisplayHeight;
-	virtual_3d_info.format	 			= mDisplayFormat;
+	_3d_info.width 	 			= mDisplayWidth;
+	_3d_info.height	 			= mDisplayHeight;
+	_3d_info.format	 			= mDisplayFormat;
 
 	//* set source 3d mode.
 	if(source3dMode == CEDARV_3D_MODE_DOUBLE_STREAM)
-		virtual_3d_info.src_mode = VIRTUAL_HWC_3D_SRC_MODE_FP;
+		_3d_info.src_mode = HWC_3D_SRC_MODE_FP;
 	else if(source3dMode == CEDARV_3D_MODE_SIDE_BY_SIDE)
-		virtual_3d_info.src_mode = VIRTUAL_HWC_3D_SRC_MODE_SSH;
+		_3d_info.src_mode = HWC_3D_SRC_MODE_SSH;
 	else if(source3dMode == CEDARV_3D_MODE_TOP_TO_BOTTOM)
-		virtual_3d_info.src_mode = VIRTUAL_HWC_3D_SRC_MODE_TB;
+		_3d_info.src_mode = HWC_3D_SRC_MODE_TB;
 	else if(source3dMode == CEDARV_3D_MODE_LINE_INTERLEAVE)
-		virtual_3d_info.src_mode = VIRTUAL_HWC_3D_SRC_MODE_LI;
+		_3d_info.src_mode = HWC_3D_SRC_MODE_LI;
 	else
-		virtual_3d_info.src_mode = VIRTUAL_HWC_3D_SRC_MODE_NORMAL;
+		_3d_info.src_mode = HWC_3D_SRC_MODE_NORMAL;
 
 	//* set display 3d mode.
 	if(displayMode == CEDARX_DISPLAY_3D_MODE_ANAGLAGH) {
 		if(source3dMode == CEDARV_3D_MODE_SIDE_BY_SIDE) {
-			virtual_3d_info.width = mDisplayWidth/2;//frm_inf->width /=2;
-			virtual_3d_info.width = (virtual_3d_info.width + 0xF) & 0xFFFFFFF0;
+			_3d_info.width = mDisplayWidth/2;//frm_inf->width /=2;
+			_3d_info.width = (_3d_info.width + 0xF) & 0xFFFFFFF0;
 		}
 		else if(source3dMode == CEDARV_3D_MODE_TOP_TO_BOTTOM) {
-			virtual_3d_info.height = mDisplayHeight/2; //frm_inf->height /=2;
-			virtual_3d_info.height = (virtual_3d_info.height + 0xF) & 0xFFFFFFF0;
+			_3d_info.height = mDisplayHeight/2;//frm_inf->height /=2;
+			_3d_info.height = (_3d_info.height + 0xF) & 0xFFFFFFF0;
 		}
 
-		if(virtual_3d_info.format != HWC_FORMAT_RGBA_8888)
-			virtual_3d_info.format = HWC_FORMAT_RGBA_8888;		//* force pixel format to be RGBA8888.
+		if(_3d_info.format != HWC_FORMAT_RGBA_8888)
+			_3d_info.format = HWC_FORMAT_RGBA_8888;		//* force pixel format to be RGBA8888.
 
-		virtual_3d_info.display_mode = VIRTUAL_HWC_3D_OUT_MODE_ANAGLAGH;
+		_3d_info.display_mode = HWC_3D_OUT_MODE_ANAGLAGH;
 	}
 	else if(displayMode == CEDARX_DISPLAY_3D_MODE_3D)
-		virtual_3d_info.display_mode = VIRTUAL_HWC_3D_OUT_MODE_HDMI_3D_1080P24_FP;
+		_3d_info.display_mode = HWC_3D_OUT_MODE_HDMI_3D_1080P24_FP;
 	else if(displayMode == CEDARX_DISPLAY_3D_MODE_2D)
-		virtual_3d_info.display_mode = VIRTUAL_HWC_3D_OUT_MODE_ORIGINAL;
+		_3d_info.display_mode = HWC_3D_OUT_MODE_ORIGINAL;
 	else
-		virtual_3d_info.display_mode = VIRTUAL_HWC_3D_OUT_MODE_2D;
+		_3d_info.display_mode = HWC_3D_OUT_MODE_2D;
 	if(mVideoRenderer != NULL) {
-		LOGV("set hdmi, virtual_src_mode = %d, virtual_dst_mode = %d", virtual_3d_info.src_mode, virtual_3d_info.display_mode);
-		return mVideoRenderer->control(VIDEORENDER_CMD_SET3DMODE, (int)&virtual_3d_info);
+		LOGV("set hdmi, src_mode = %d, dst_mode = %d", _3d_info.src_mode, _3d_info.display_mode);
+		return mVideoRenderer->control(VIDEORENDER_CMD_SET3DMODE, (int)&_3d_info);
 	}
 
 	return UNKNOWN_ERROR;
@@ -1710,7 +1693,7 @@ void CedarXPlayer::StagefrightVideoRenderExit()
 int CedarXPlayer::StagefrightVideoRenderInit(int width, int height, int format, void *frame_info)
 {
 	cedarv_picture_t* frm_inf;
-	android_native_rect_t crop; //android_native_rect_t struct is defined in system\core\include\system\window.h
+	android_native_rect_t crop;
 
 	mDisplayWidth 	= width;
 	mDisplayHeight 	= height;
@@ -1971,15 +1954,6 @@ int CedarXPlayer::StagefrightAudioRenderFlushCache(void)
 	return mAudioPlayer->seekTo(0);
 }
 
-int CedarXPlayer::StagefrightAudioRenderPause(void)
-{
-	if(mAudioPlayer == NULL)
-		return 0;
-
-	mAudioPlayer->pause();
-	return 0;
-}
-
 int CedarXPlayer::CedarXPlayerCallback(int event, void *info)
 {
 	int ret = 0;
@@ -2020,10 +1994,6 @@ int CedarXPlayer::CedarXPlayerCallback(int event, void *info)
 
 	case CDX_EVENT_AUDIORENDERDATA:
 		ret = StagefrightAudioRenderData((void*)para[0],para[1]);
-		break;
-
-	case CDX_EVENT_AUDIORENDERPAUSE:
-		ret = StagefrightAudioRenderPause();
 		break;
 
 	case CDX_EVENT_AUDIORENDERGETSPACE:

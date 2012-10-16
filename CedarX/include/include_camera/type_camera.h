@@ -20,7 +20,6 @@ typedef struct V4L2BUF_t
 	long long		timeStamp;		// time stamp of this frame
 	RECT_t			crop_rect;
 	int				format;
-	void*           overlay_info;
 }V4L2BUF_t;
 
 typedef enum MEDIA_SRC_MODE
@@ -72,7 +71,6 @@ typedef struct ENC_BUFFER_t
 	int height;
 	RECT_t crop_rect;
 	int force_keyframe;
-	void*  overlay_info;
 }ENC_BUFFER_t;
 
 typedef enum JPEG_COLOR_FORMAT

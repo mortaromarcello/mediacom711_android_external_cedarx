@@ -304,7 +304,6 @@ typedef enum OMX_INDEXTYPE {
 	OMX_IndexVendorProbe,		//* for the user demux module to probe.
 
 	OMX_IndexVendorSetRecRenderCallbackInfo,
-	OMX_IndexVendorGetDuarations,
 
     OMX_IndexMax = 0x7FFFFFFF
 

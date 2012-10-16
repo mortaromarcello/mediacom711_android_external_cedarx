@@ -55,7 +55,7 @@ typedef struct CedarXDataSourceDesc{
 
 	char *source_url; //SetDataSource url
 	CedarXExternFdDesc ext_fd_desc;
-	int thirdpart_encrypted_type;
+
 	void *url_headers;
 	void *sft_stream_handle;
 	void *sft_cached_source2;
